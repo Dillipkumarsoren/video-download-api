@@ -15,11 +15,15 @@ def api():
     if not url:
         return jsonify({"error": "no url provided"})
 
-    p = subprocess.run(
-        ["yt-dlp", "-j", url],
-        capture_output=True,
-        text=True
-    )
+    try:
+        p = subprocess.run(
+            ["yt-dlp", "-j", url],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
     if p.returncode != 0:
         return jsonify({
