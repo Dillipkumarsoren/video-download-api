@@ -9,6 +9,10 @@ CORS(app)
 def home():
     return "API is running"
 
+@app.route("/test")
+def test():
+    return "TEST OK"
+
 @app.route("/api", methods=["GET"])
 def api():
     url = request.args.get("url")
