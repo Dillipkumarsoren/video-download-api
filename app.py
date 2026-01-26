@@ -5,11 +5,11 @@ import subprocess, json, os
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
     return "API is running"
 
-@app.route("/api/")
+@app.route("/api", methods=["GET"])
 def api():
     url = request.args.get("url")
     if not url:
@@ -17,11 +17,15 @@ def api():
 
     p = subprocess.run(
         ["yt-dlp", "-j", url],
-        capture_output=True, text=True
+        capture_output=True,
+        text=True
     )
 
-    if not p.stdout:
-        return jsonify({"error": "yt-dlp failed", "details": p.stderr})
+    if p.returncode != 0:
+        return jsonify({
+            "error": "yt-dlp failed",
+            "details": p.stderr
+        })
 
     data = json.loads(p.stdout)
     formats = []
@@ -39,5 +43,5 @@ def api():
     })
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
