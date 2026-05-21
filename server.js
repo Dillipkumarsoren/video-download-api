@@ -1,3 +1,4 @@
+
 const express = require("express");
 const ytdlp = require("yt-dlp-exec");
 
@@ -21,9 +22,13 @@ app.get("/download", async (req, res) => {
 
     const info = await ytdlp(url, {
       dumpSingleJson: true,
+      noCheckCertificates: true,
       noWarnings: true,
       preferFreeFormats: true,
-      youtubeSkipDashManifest: true
+      addHeader: [
+        "referer:youtube.com",
+        "user-agent:googlebot"
+      ]
     });
 
     res.json({
@@ -37,7 +42,7 @@ app.get("/download", async (req, res) => {
     console.log(err);
 
     res.json({
-      error: "Video Fetch Failed"
+      error: err.toString()
     });
 
   }
