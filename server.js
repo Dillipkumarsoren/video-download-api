@@ -18,14 +18,30 @@ return res.send("No URL");
 try{
 
 const info = await ytdlp(url,{
-dumpSingleJson:true
+dumpSingleJson:true,
+format:"mp4"
 });
 
-res.redirect(info.url);
+if(!info.url){
+
+return res.send("Video fetch failed");
+
+}
+
+res.json({
+
+title: info.title,
+thumbnail: info.thumbnail,
+download: info.url
+
+});
 
 }catch(err){
 
-res.send("Error");
+console.log(err);
+
+res.send("Download Error");
+
 }
 
 });
@@ -33,5 +49,7 @@ res.send("Error");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, ()=>{
+
 console.log("Running");
+
 });
