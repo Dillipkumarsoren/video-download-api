@@ -3,53 +3,49 @@ const ytdlp = require("yt-dlp-exec");
 
 const app = express();
 
-app.get("/", (req,res)=>{
-res.send("Server Running");
+app.get("/", (req, res) => {
+  res.send("Server Running");
 });
 
-app.get("/download", async (req,res)=>{
+app.get("/download", async (req, res) => {
 
-const url = req.query.url;
+  const url = req.query.url;
 
-if(!url){
-return res.send("No URL");
-}
+  if (!url) {
+    return res.json({
+      error: "No URL"
+    });
+  }
 
-try{
+  try {
 
-const info = await ytdlp(url,{
-dumpSingleJson:true,
-format:"mp4"
-});
+    const info = await ytdlp(url, {
+      dumpSingleJson: true,
+      noWarnings: true,
+      preferFreeFormats: true,
+      youtubeSkipDashManifest: true
+    });
 
-if(!info.url){
+    res.json({
+      title: info.title,
+      thumbnail: info.thumbnail,
+      download: info.url
+    });
 
-return res.send("Video fetch failed");
+  } catch (err) {
 
-}
+    console.log(err);
 
-res.json({
+    res.json({
+      error: "Video Fetch Failed"
+    });
 
-title: info.title,
-thumbnail: info.thumbnail,
-download: info.url
-
-});
-
-}catch(err){
-
-console.log(err);
-
-res.send("Download Error");
-
-}
+  }
 
 });
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=>{
-
-console.log("Running");
-
+app.listen(PORT, () => {
+  console.log("Running");
 });
