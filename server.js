@@ -4,50 +4,66 @@ const ytdlp = require("yt-dlp-exec");
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Server Running");
+app.get("/", (req,res)=>{
+res.send("Server Running");
 });
 
-app.get("/download", async (req, res) => {
+app.get("/download", async (req,res)=>{
 
-  const url = req.query.url;
+const url = req.query.url;
 
-  if (!url) {
-    return res.json({
-      error: "No URL"
-    });
-  }
+if(!url){
 
-  try {
-
-    const info = await ytdlp(url, {
-  dumpSingleJson: true,
-  noCheckCertificates: true,
-  noWarnings: true,
-  preferFreeFormats: true,
-  extractorArgs: "youtube:player_client=android"
+return res.json({
+error:"No URL"
 });
 
-    res.json({
-      title: info.title,
-      thumbnail: info.thumbnail,
-      download: info.url
-    });
+}
 
-  } catch (err) {
+try{
 
-    console.log(err);
+const info = await ytdlp(url,{
 
-    res.json({
-      error: err.toString()
-    });
+dumpSingleJson:true,
 
-  }
+format:"best",
+
+extractorArgs:
+"youtube:player_client=android_creator",
+
+addHeader:[
+"user-agent:com.google.android.youtube/"
+]
 
 });
 
-const PORT = process.env.PORT || 3000;
+res.json({
 
-app.listen(PORT, () => {
-  console.log("Running");
+title: info.title,
+
+thumbnail: info.thumbnail,
+
+download: info.url
+
+});
+
+}catch(err){
+
+console.log(err);
+
+res.json({
+error:"YouTube blocked request"
+});
+
+}
+
+});
+
+const PORT =
+process.env.PORT || 3000;
+
+app.listen(PORT,()=>{
+
+console.log("Running");
+
 });
