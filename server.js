@@ -21,15 +21,12 @@ app.get("/download", async (req, res) => {
   try {
 
     const info = await ytdlp(url, {
-      dumpSingleJson: true,
-      noCheckCertificates: true,
-      noWarnings: true,
-      preferFreeFormats: true,
-      addHeader: [
-        "referer:youtube.com",
-        "user-agent:googlebot"
-      ]
-    });
+  dumpSingleJson: true,
+  noCheckCertificates: true,
+  noWarnings: true,
+  preferFreeFormats: true,
+  extractorArgs: "youtube:player_client=android"
+});
 
     res.json({
       title: info.title,
